@@ -1,0 +1,13 @@
+{
+    "name": "http_webhooks",
+    "type": "drupal-module",
+    "description": "HTTP Webhooks",
+    "keywords": [
+    ],
+    "homepage": "https://www.drupal.org/project/http_webhooks",
+    "minimum-stability": "dev",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/http_webhooks",
+        "source": "http://cgit.drupalcode.org/http_webhooks",
+    },
+}

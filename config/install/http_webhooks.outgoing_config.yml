@@ -1,0 +1,4 @@
+http_webhooks:
+  outgoing:
+    secret: ''
+    url: ''

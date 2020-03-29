@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Contains http_webhooks.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function http_webhooks_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the http_webhooks module.
+    case 'help.page.http_webhooks':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('HTTP Webhooks') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function http_webhooks_theme() {
+  return [
+    'http_webhooks' => [
+      'render element' => 'children',
+    ],
+  ];
+}

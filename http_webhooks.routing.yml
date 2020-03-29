@@ -1,0 +1,9 @@
+http_webhooks.outgoing_webhook_config_form:
+  path: '/admin/config/http_webhooks'
+  defaults:
+    _form: '\Drupal\http_webhooks\Form\OutgoingWebhookConfigForm'
+    _title: 'OutgoingWebhookConfigForm'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    _admin_route: TRUE
