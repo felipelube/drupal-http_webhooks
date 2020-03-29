@@ -4,4 +4,4 @@ services:
     arguments: ['http_webhooks']
   http_webhooks.outgoing_webhook:
     class: Drupal\http_webhooks\OutgoingWebhook
-    arguments: ['@http_client', '@serialization.json']
+    arguments: ['@http_client', '@serialization.json', '@config.factory']

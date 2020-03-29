@@ -3,6 +3,7 @@
 namespace Drupal\http_webhooks;
 use GuzzleHttp\ClientInterface;
 use Drupal\Component\Serialization\SerializationInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Class OutgoingWebhook.
@@ -24,11 +25,22 @@ class OutgoingWebhook {
   protected $serializationJson;
 
   /**
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
    * Constructs a new OutgoingWebhook object.
    */
-  public function __construct(ClientInterface $http_client, SerializationInterface $serialization_json) {
+  public function __construct(
+    ClientInterface $http_client,
+    SerializationInterface $serialization_json,
+    ConfigFactoryInterface $config_factory
+  ) {
     $this->httpClient = $http_client;
     $this->serializationJson = $serialization_json;
+    $this->configFactory = $config_factory;
+  }
   }
 
 }
