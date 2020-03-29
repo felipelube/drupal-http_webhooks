@@ -6,6 +6,8 @@
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\http_webhooks\OutgoingWebhook;
 
 /**
  * Implements hook_help().
@@ -32,4 +34,16 @@ function http_webhooks_theme() {
       'render element' => 'children',
     ],
   ];
+}
+
+function http_webhooks_entity_update(EntityInterface $entity) {
+  \Drupal::service('http_webhooks.outgoing_webhook')->handle_event($entity, OutgoingWebhook::EVENT_UPDATED);
+}
+
+function http_webhooks_entity_create(EntityInterface $entity) {
+  \Drupal::service('http_webhooks.outgoing_webhook')->handle_event($entity, OutgoingWebhook::EVENT_CREATED);
+}
+
+function http_webhooks_entity_delete(EntityInterface $entity) {
+  \Drupal::service('http_webhooks.outgoing_webhook')->handle_event($entity, OutgoingWebhook::EVENT_DELETED);
 }
