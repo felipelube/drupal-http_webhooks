@@ -37,13 +37,13 @@ function http_webhooks_theme() {
 }
 
 function http_webhooks_entity_update(EntityInterface $entity) {
-  \Drupal::service('http_webhooks.outgoing_webhook')->handle_event($entity, OutgoingWebhook::EVENT_UPDATED);
+  \Drupal::service('http_webhooks.outgoing_webhook')->handle_event($entity, OutgoingWebhook::EVENT_UPDATE);
 }
 
 function http_webhooks_entity_create(EntityInterface $entity) {
-  \Drupal::service('http_webhooks.outgoing_webhook')->handle_event($entity, OutgoingWebhook::EVENT_CREATED);
+  \Drupal::service('http_webhooks.outgoing_webhook')->handle_event($entity, OutgoingWebhook::EVENT_CREATE);
 }
 
 function http_webhooks_entity_delete(EntityInterface $entity) {
-  \Drupal::service('http_webhooks.outgoing_webhook')->handle_event($entity, OutgoingWebhook::EVENT_DELETED);
+  \Drupal::service('http_webhooks.outgoing_webhook')->handle_event($entity, OutgoingWebhook::EVENT_DELETE);
 }

@@ -14,9 +14,21 @@ use GuzzleHttp\Psr7\Request;
  * Class OutgoingWebhook.
  */
 class OutgoingWebhook {
-  const EVENT_CREATED = "created";
-  const EVENT_UPDATED = "updated";
-  const EVENT_DELETED = "deleted";
+  const EVENT_CREATE = "create";
+  const EVENT_UPDATE = "update";
+  const EVENT_DELETE = "delete";
+
+  const VALID_EVENTS = [
+    'entity:user:create' => ['type' => 'user' , 'event' => 'create'],
+    'entity:user:update' => ['type' => 'user' , 'event' => 'update'],
+    'entity:user:delete' => ['type' => 'user' , 'event' => 'delete'],
+    'entity:node:create' => ['type' => 'node' , 'event' => 'create'],
+    'entity:node:update' => ['type' => 'node' , 'event' => 'update'],
+    'entity:node:delete' => ['type' => 'node' , 'event' => 'delete'],
+    'entity:comment:create' => ['type' => 'node' , 'event' => 'create'],
+    'entity:node:update' => ['type' => 'node' , 'event' => 'update'],
+    'entity:node:delete' => ['type' => 'node' , 'event' => 'delete'],
+  ];
 
   /**
    * GuzzleHttp\ClientInterface definition.
@@ -33,9 +45,9 @@ class OutgoingWebhook {
   protected $serializationJson;
 
   /**
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   * @var \Drupal\Core\Config\ImmutableConfig
    */
-  protected $configFactory;
+  protected $config;
 
   /**
    * Constructs a new OutgoingWebhook object.
@@ -47,18 +59,23 @@ class OutgoingWebhook {
   ) {
     $this->httpClient = $http_client;
     $this->serializationJson = $serialization_json;
-    $this->configFactory = $config_factory;
+    $this->config = $config_factory->get('http_webhooks.outgoing_config');
   }
 
   public function handle_event(EntityInterface $entity, $event) {
-    // TODO: only post for entities and events allowed in configuration
-    $this->post();
+    $type = $entity->getEntityTypeId();
+    $eventString = "entity:$type:$event";
+    $allowed_events = $this->config->get("http_webhooks.outgoing.events");
+
+    // only post for entities and events allowed in the configuration
+    if (in_array($eventString, $allowed_events)) {
+      $this->post();
+    };
   }
 
   public function post() {
-    $config = $this->configFactory->get('http_webhooks.outgoing_config');
-    $secret = $config->get('http_webhooks.outgoing.secret');
-    $url = $config->get('http_webhooks.outgoing.url');
+    $secret = $this->config->get('http_webhooks.outgoing.secret');
+    $url = $this->config->get('http_webhooks.outgoing.url');
     if (empty($secret) || empty($url)) {
       // TODO: log a error message: these configuration are necessary,
       return;
