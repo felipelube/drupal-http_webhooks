@@ -25,9 +25,9 @@ class OutgoingWebhook {
     'entity:node:create' => ['type' => 'node' , 'event' => 'create'],
     'entity:node:update' => ['type' => 'node' , 'event' => 'update'],
     'entity:node:delete' => ['type' => 'node' , 'event' => 'delete'],
-    'entity:comment:create' => ['type' => 'node' , 'event' => 'create'],
-    'entity:node:update' => ['type' => 'node' , 'event' => 'update'],
-    'entity:node:delete' => ['type' => 'node' , 'event' => 'delete'],
+    'entity:comment:create' => ['type' => 'comment' , 'event' => 'create'],
+    'entity:comment:update' => ['type' => 'comment' , 'event' => 'update'],
+    'entity:comment:delete' => ['type' => 'comment' , 'event' => 'delete'],
   ];
 
   /**
