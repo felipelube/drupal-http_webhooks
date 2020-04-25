@@ -8,6 +8,6 @@
     "minimum-stability": "dev",
     "support": {
         "issues": "https://www.drupal.org/project/issues/http_webhooks",
-        "source": "http://cgit.drupalcode.org/http_webhooks",
-    },
+        "source": "http://cgit.drupalcode.org/http_webhooks"
+    }
 }
