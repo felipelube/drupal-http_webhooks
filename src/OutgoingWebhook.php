@@ -5,10 +5,13 @@ namespace Drupal\http_webhooks;
 use Drupal\Component\Serialization\SerializationInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Utility\Error;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7;
 use GuzzleHttp\Psr7\Request;
+use Psr\Log\LoggerInterface;
 
 /**
  * Class OutgoingWebhook.
@@ -50,34 +53,41 @@ class OutgoingWebhook {
   protected $config;
 
   /**
+  * @var \Psr\Log\LoggerInterface
+  */
+  protected $logger;
+
+  /**
    * Constructs a new OutgoingWebhook object.
    */
   public function __construct(
     ClientInterface $http_client,
     SerializationInterface $serialization_json,
-    ConfigFactoryInterface $config_factory
+    ConfigFactoryInterface $config_factory,
+    LoggerInterface $logger
   ) {
     $this->httpClient = $http_client;
     $this->serializationJson = $serialization_json;
     $this->config = $config_factory->get('http_webhooks.outgoing_config');
+    $this->logger = $logger;
   }
 
   public function handle_event(EntityInterface $entity, $event) {
-    $type = $entity->getEntityTypeId();
-    $eventString = "entity:$type:$event";
-    $allowed_events = $this->config->get("http_webhooks.outgoing.events");
+    $entityType = $entity->getEntityTypeId();
+    $eventString = "entity:$entityType:$event";
+    $allowedEvents = $this->config->get("http_webhooks.outgoing.events");
 
     // only post for entities and events allowed in the configuration
-    if (in_array($eventString, $allowed_events)) {
-      $this->post();
+    if (in_array($eventString, $allowedEvents)) {
+      $this->post($entityType, $event);
     };
   }
 
-  public function post() {
+  private function post($entityType, $event) {
     $secret = $this->config->get('http_webhooks.outgoing.secret');
     $url = $this->config->get('http_webhooks.outgoing.url');
     if (empty($secret) || empty($url)) {
-      // TODO: log a error message: these configuration are necessary,
+      $this->logger->critical('Cannot send the webhook since either the secret or the url is undefined.');
       return;
     }
 
@@ -86,12 +96,17 @@ class OutgoingWebhook {
         'json' => ['secret'=> $secret]
       ]);
     } catch(RequestException $e) {
-      // TODO: log a error message: the request failed
+      $variables = Error::decodeException($e);
+      if ($e instanceof BadResponseException) {
+        $this->logger->error('Received error response after sending the webhook: %type: @message in %function (line %line of %file).', $variables);
+      } else {
+        $this->logger->error('There was an error when trying to send the webhook: %type: @message in %function (line %line of %file).', $variables);
+      }
       return;
     }
-    $body = $response->getBody();
-    // TODO: log a success message with the response payload
-
+    $this->logger->info('Webhook sent and acknowledged after %entity_type %event event.', [
+      '%event' => $event,
+      '%entity_type' => $entityType
+    ]);
   }
-
 }
